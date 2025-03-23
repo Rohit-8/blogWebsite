@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Paper, Typography, Button, useTheme } from '@mui/material';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
+import { API_BASE_URL } from '../config';
 
 function BlogPost() {
   const [post, setPost] = useState(null);
@@ -13,7 +14,7 @@ function BlogPost() {
 
   useEffect(() => {
     const fetchPost = async () => {
-      const res = await axios.get(`http://localhost:5000/api/posts/${id}`);
+      const res = await axios.get(`${API_BASE_URL}/api/posts/${id}`);
       setPost(res.data);
     };
     fetchPost();
@@ -21,7 +22,7 @@ function BlogPost() {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/posts/${id}`, {
+      await axios.delete(`${API_BASE_URL}/api/posts/${id}`, {
         headers: { 'x-auth-token': localStorage.getItem('token') }
       });
       navigate('/');
