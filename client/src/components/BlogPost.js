@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Paper, Typography, Button } from '@mui/material';
+import { Container, Paper, Typography, Button, useTheme } from '@mui/material';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 
@@ -9,6 +9,7 @@ function BlogPost() {
   const { id } = useParams();
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const theme = useTheme();
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -33,7 +34,13 @@ function BlogPost() {
 
   return (
     <Container maxWidth="md">
-      <Paper sx={{ padding: '2rem', marginTop: '2rem' }}>
+      <Paper 
+        sx={{ 
+          padding: '2rem', 
+          marginTop: '2rem',
+          backgroundColor: theme.palette.background.paper
+        }}
+      >
         {post.image && (
           <img
             src={post.image}

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { 
   Grid, 
   Card, 
@@ -8,33 +8,100 @@ import {
   Typography, 
   Container,
   useTheme,
+  Button,
+  CircularProgress,
   Box
 } from '@mui/material';
 import axios from 'axios';
+import { AuthContext } from '../context/AuthContext';
 
-function Home() {
+function MyPosts() {
   const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const theme = useTheme();
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchPosts = async () => {
+    const fetchMyPosts = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/posts');
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
+
+        const res = await axios.get('http://localhost:5000/api/posts/user', {
+          headers: { 'x-auth-token': token }
+        });
+
+        console.log('Fetched posts:', res.data); // Debug log
         setPosts(res.data);
+        setError(null);
       } catch (err) {
         console.error('Error fetching posts:', err);
+        setError(err.response?.data?.message || 'Error fetching your posts');
+      } finally {
+        setLoading(false);
       }
     };
-    fetchPosts();
-  }, []);
+
+    if (user) {
+      fetchMyPosts();
+    }
+  }, [user]);
+
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
+
+  if (loading) {
+    return (
+      <Container 
+        sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          minHeight: '200px' 
+        }}
+      >
+        <CircularProgress />
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container maxWidth="lg" sx={{ marginTop: '2rem' }}>
+        <Typography color="error" align="center">
+          {error}
+        </Typography>
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="lg" sx={{ marginTop: '2rem' }}>
-      {/* Posts Grid */}
-      <Grid container spacing={4}>
-        {posts.length > 0 ? (
-          posts.map(post => (
+      <Typography variant="h4" gutterBottom sx={{ color: theme.palette.text.primary }}>
+        My Posts
+      </Typography>
+
+      {posts.length === 0 ? (
+        <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+          <Typography variant="h6" gutterBottom sx={{ color: theme.palette.text.secondary }}>
+            You haven't created any posts yet.
+          </Typography>
+          <Button 
+            variant="contained" 
+            onClick={() => navigate('/create')}
+            sx={{ mt: 2 }}
+          >
+            Create Your First Post
+          </Button>
+        </div>
+      ) : (
+        <Grid container spacing={4}>
+          {posts.map(post => (
             <Grid item xs={12} md={6} lg={4} key={post._id}>
               <Card 
                 sx={{ 
@@ -80,8 +147,7 @@ function Home() {
                       gutterBottom
                       sx={{ color: theme.palette.text.secondary }}
                     >
-                      {post.author && `By ${post.author.username} • `}
-                      {new Date(post.createdAt).toLocaleDateString()}
+                      Created on: {new Date(post.createdAt).toLocaleDateString()}
                     </Typography>
                     <Typography 
                       variant="body2" 
@@ -103,21 +169,11 @@ function Home() {
                 </CardActionArea>
               </Card>
             </Grid>
-          ))
-        ) : (
-          <Grid item xs={12}>
-            <Typography 
-              variant="h6" 
-              align="center"
-              sx={{ color: theme.palette.text.secondary }}
-            >
-              No posts available.
-            </Typography>
-          </Grid>
-        )}
-      </Grid>
+          ))}
+        </Grid>
+      )}
     </Container>
   );
 }
 
-export default Home; 
+export default MyPosts; 

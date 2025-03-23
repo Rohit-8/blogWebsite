@@ -5,9 +5,26 @@ const auth = require('../middleware/auth');
 // Get all posts
 router.get('/', async (req, res) => {
   try {
-    const posts = await Post.find().sort({ createdAt: -1 }).populate('author', 'username');
+    const posts = await Post.find()
+      .sort({ createdAt: -1 })
+      .populate('author', 'username');
     res.json(posts);
   } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Get user's posts
+router.get('/user', auth, async (req, res) => {
+  try {
+    console.log('Fetching posts for user:', req.user.id); // Debug log
+    const posts = await Post.find({ author: req.user.id })
+      .sort({ createdAt: -1 })
+      .populate('author', 'username');
+    console.log('Found posts:', posts); // Debug log
+    res.json(posts);
+  } catch (err) {
+    console.error('Error in /user route:', err); // Debug log
     res.status(500).json({ message: err.message });
   }
 });
@@ -15,7 +32,8 @@ router.get('/', async (req, res) => {
 // Get single post
 router.get('/:id', async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id).populate('author', 'username');
+    const post = await Post.findById(req.params.id)
+      .populate('author', 'username');
     if (!post) {
       return res.status(404).json({ message: 'Post not found' });
     }
@@ -36,6 +54,7 @@ router.post('/', auth, async (req, res) => {
       author: req.user.id
     });
     const savedPost = await newPost.save();
+    await savedPost.populate('author', 'username');
     res.json(savedPost);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -56,7 +75,7 @@ router.put('/:id', auth, async (req, res) => {
       req.params.id,
       { $set: req.body },
       { new: true }
-    );
+    ).populate('author', 'username');
     res.json(updatedPost);
   } catch (err) {
     res.status(500).json({ message: err.message });
