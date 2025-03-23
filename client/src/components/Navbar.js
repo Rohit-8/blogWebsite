@@ -1,5 +1,5 @@
-import React, { useContext } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useContext, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   AppBar, 
   Toolbar, 
@@ -7,7 +7,10 @@ import {
   Button, 
   IconButton,
   useTheme,
-  Box 
+  Box,
+  Avatar,
+  Menu,
+  MenuItem,
 } from '@mui/material';
 import { Brightness4, Brightness7 } from '@mui/icons-material';
 import { AuthContext } from '../context/AuthContext';
@@ -18,6 +21,27 @@ function Navbar() {
   const { mode, toggleTheme } = useContext(ThemeContext);
   const theme = useTheme();
   const location = useLocation();
+  const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    handleMenuClose();
+    logout();
+    navigate('/');
+  };
+
+  const handleProfile = () => {
+    handleMenuClose();
+    navigate('/profile');
+  };
 
   return (
     <AppBar position="static">
@@ -79,9 +103,23 @@ function Navbar() {
             >
               Create Post
             </Button>
-            <Button color="inherit" onClick={logout}>
-              Logout
-            </Button>
+            <IconButton
+              onClick={handleMenuOpen}
+              sx={{ p: 0 }}
+            >
+              <Avatar sx={{ bgcolor: theme.palette.primary.dark }}>
+                {user.username.charAt(0).toUpperCase()}
+              </Avatar>
+            </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+              onClick={handleMenuClose}
+            >
+              <MenuItem onClick={handleProfile}>Profile</MenuItem>
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            </Menu>
           </>
         ) : (
           <>
