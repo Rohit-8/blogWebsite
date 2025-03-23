@@ -94,7 +94,14 @@ function MyPosts() {
           <Button 
             variant="contained" 
             onClick={() => navigate('/create')}
-            sx={{ mt: 2 }}
+            sx={{ 
+              mt: 2,
+              bgcolor: theme.palette.mode === 'dark' ? 'primary.main' : 'primary.main',
+              color: theme.palette.mode === 'dark' ? 'common.white' : 'common.white',
+              '&:hover': {
+                bgcolor: theme.palette.mode === 'dark' ? 'primary.dark' : 'primary.dark',
+              }
+            }}
           >
             Create Your First Post
           </Button>

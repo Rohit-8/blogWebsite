@@ -8,6 +8,7 @@ import BlogPost from './components/BlogPost';
 import CreatePost from './components/CreatePost';
 import Login from './components/Login';
 import Register from './components/Register';
+import Profile from './components/Profile';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route path="/create" element={<CreatePost />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/profile" element={<Profile />} />
           </Routes>
         </div>
       </Router>
