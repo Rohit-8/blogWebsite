@@ -11,6 +11,7 @@ import {
   Box
 } from '@mui/material';
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 
 function Home() {
   const [posts, setPosts] = useState([]);
@@ -20,7 +21,7 @@ function Home() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/posts');
+        const res = await axios.get(`${API_BASE_URL}/api/posts`);
         setPosts(res.data);
       } catch (err) {
         console.error('Error fetching posts:', err);

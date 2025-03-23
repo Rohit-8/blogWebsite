@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
+import { API_BASE_URL } from '../config';
 
 function MyPosts() {
   const [posts, setPosts] = useState([]);
@@ -31,7 +32,7 @@ function MyPosts() {
           throw new Error('No authentication token found');
         }
 
-        const res = await axios.get('http://localhost:5000/api/posts/user', {
+        const res = await axios.get(`${API_BASE_URL}/api/posts/user`, {
           headers: { 'x-auth-token': token }
         });
 

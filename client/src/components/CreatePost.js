@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Paper, TextField, Button, Typography } from '@mui/material';
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 
 function CreatePost() {
   const [title, setTitle] = useState('');
@@ -14,7 +15,7 @@ function CreatePost() {
     e.preventDefault();
     try {
       await axios.post(
-        'http://localhost:5000/api/posts',
+        `${API_BASE_URL}/api/posts`,
         { title, content, image },
         {
           headers: { 'x-auth-token': localStorage.getItem('token') }
