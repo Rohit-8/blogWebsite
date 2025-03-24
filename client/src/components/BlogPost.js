@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Paper, Typography, Button, useTheme, Box } from '@mui/material';
+import { Container, Paper, Typography, Button, useTheme, Box, CircularProgress } from '@mui/material';
+import ReactMarkdown from 'react-markdown';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import { API_BASE_URL } from '../config';
@@ -61,9 +62,39 @@ function BlogPost() {
         <Typography color="textSecondary" gutterBottom>
           By {post.author.username} on {new Date(post.createdAt).toLocaleDateString()}
         </Typography>
-        <Typography variant="body1" paragraph>
-          {post.content}
-        </Typography>
+        <Box sx={{ 
+          mt: 3, 
+          '& img': { maxWidth: '100%' },
+          '& h1': { fontSize: '2rem', mt: 3, mb: 2 },
+          '& h2': { fontSize: '1.8rem', mt: 3, mb: 2 },
+          '& h3': { fontSize: '1.6rem', mt: 3, mb: 2 },
+          '& p': { mb: 2, lineHeight: 1.7 },
+          '& ul, & ol': { mb: 2, pl: 4 },
+          '& blockquote': {
+            borderLeft: '4px solid',
+            borderColor: 'primary.main',
+            pl: 2,
+            py: 1,
+            my: 2,
+            bgcolor: 'action.hover'
+          },
+          '& code': {
+            p: 0.5,
+            borderRadius: 1,
+            bgcolor: 'action.hover',
+            fontFamily: 'monospace'
+          },
+          '& pre': {
+            p: 2,
+            borderRadius: 1,
+            bgcolor: 'action.hover',
+            '& code': {
+              bgcolor: 'transparent'
+            }
+          }
+        }}>
+          <ReactMarkdown>{post.content}</ReactMarkdown>
+        </Box>
         {user && user.id === post.author._id && (
           <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
             <Button
