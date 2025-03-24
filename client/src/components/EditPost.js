@@ -6,11 +6,13 @@ import {
   TextField, 
   Button, 
   Typography,
-  useTheme 
+  useTheme,
+  Box
 } from '@mui/material';
 import axios from 'axios';
 import { API_BASE_URL } from '../config';
 import LoadingSpinner from './LoadingSpinner';
+import MDEditor from '@uiw/react-md-editor';
 
 function EditPost() {
   const [title, setTitle] = useState('');
@@ -21,6 +23,7 @@ function EditPost() {
   const navigate = useNavigate();
   const { id } = useParams();
   const theme = useTheme();
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -41,6 +44,7 @@ function EditPost() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
     try {
       await axios.put(
         `${API_BASE_URL}/api/posts/${id}`,
@@ -52,6 +56,8 @@ function EditPost() {
       navigate(`/post/${id}`);
     } catch (err) {
       setError(err.response?.data?.message || 'An error occurred');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -71,14 +77,15 @@ function EditPost() {
 
   return (
     <Container maxWidth="md">
-      <Paper sx={{ 
-        padding: '2rem', 
-        marginTop: '2rem',
-        backgroundColor: theme.palette.background.paper 
-      }}>
+      <Paper sx={{ padding: '2rem', marginTop: '2rem' }}>
         <Typography variant="h4" align="center" gutterBottom>
           Edit Post
         </Typography>
+        {error && (
+          <Typography color="error" align="center" gutterBottom>
+            {error}
+          </Typography>
+        )}
         <form onSubmit={handleSubmit}>
           <TextField
             label="Title"
@@ -87,13 +94,6 @@ function EditPost() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
-            sx={{ 
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.23)' : 'rgba(0, 0, 0, 0.23)',
-                },
-              },
-            }}
           />
           <TextField
             label="Image URL (optional)"
@@ -101,39 +101,30 @@ function EditPost() {
             margin="normal"
             value={image}
             onChange={(e) => setImage(e.target.value)}
-            sx={{ 
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.23)' : 'rgba(0, 0, 0, 0.23)',
-                },
-              },
-            }}
           />
-          <TextField
-            label="Content"
-            fullWidth
-            margin="normal"
-            multiline
-            rows={10}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            required
-            sx={{ 
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.23)' : 'rgba(0, 0, 0, 0.23)',
-                },
-              },
-            }}
-          />
+          <Box sx={{ my: 2 }}>
+            <Typography variant="subtitle1" gutterBottom>
+              Content
+            </Typography>
+            <div data-color-mode={theme.palette.mode}>
+              <MDEditor
+                value={content}
+                onChange={setContent}
+                preview="edit"
+                height={400}
+                hideToolbar={false}
+              />
+            </div>
+          </Box>
           <Button
             type="submit"
             variant="contained"
             color="primary"
             fullWidth
+            disabled={submitting}
             sx={{ marginTop: '1rem' }}
           >
-            Update Post
+            {submitting ? 'Updating...' : 'Update Post'}
           </Button>
         </form>
       </Paper>
