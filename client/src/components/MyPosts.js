@@ -26,7 +26,10 @@ function MyPosts() {
 
   useEffect(() => {
     const fetchMyPosts = async () => {
+      if (!user) return;
+      
       try {
+        setLoading(true);
         const token = localStorage.getItem('token');
         if (!token) {
           throw new Error('No authentication token found');
@@ -35,21 +38,16 @@ function MyPosts() {
         const res = await axios.get(`${API_BASE_URL}/api/posts/user`, {
           headers: { 'x-auth-token': token }
         });
-
-        console.log('Fetched posts:', res.data); // Debug log
         setPosts(res.data);
         setError(null);
       } catch (err) {
-        console.error('Error fetching posts:', err);
         setError(err.response?.data?.message || 'Error fetching your posts');
       } finally {
         setLoading(false);
       }
     };
 
-    if (user) {
-      fetchMyPosts();
-    }
+    fetchMyPosts();
   }, [user]);
 
   if (!user) {
@@ -63,7 +61,7 @@ function MyPosts() {
           display: 'flex', 
           justifyContent: 'center', 
           alignItems: 'center', 
-          minHeight: '200px' 
+          minHeight: '60vh' 
         }}
       >
         <CircularProgress />
@@ -74,7 +72,12 @@ function MyPosts() {
   if (error) {
     return (
       <Container maxWidth="lg" sx={{ marginTop: '2rem' }}>
-        <Typography color="error" align="center">
+        <Typography 
+          variant="h6" 
+          align="center" 
+          color="error"
+          sx={{ color: theme.palette.error.main }}
+        >
           {error}
         </Typography>
       </Container>
@@ -88,7 +91,7 @@ function MyPosts() {
       </Typography>
 
       {posts.length === 0 ? (
-        <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+        <Box sx={{ textAlign: 'center', marginTop: '2rem' }}>
           <Typography variant="h6" gutterBottom sx={{ color: theme.palette.text.secondary }}>
             You haven't created any posts yet.
           </Typography>
@@ -106,7 +109,7 @@ function MyPosts() {
           >
             Create Your First Post
           </Button>
-        </div>
+        </Box>
       ) : (
         <Grid container spacing={4}>
           {posts.map(post => (

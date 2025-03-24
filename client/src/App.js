@@ -9,6 +9,7 @@ import CreatePost from './components/CreatePost';
 import Login from './components/Login';
 import Register from './components/Register';
 import Profile from './components/Profile';
+import EditPost from './components/EditPost';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Route path="/my-posts" element={<MyPosts />} />
             <Route path="/post/:id" element={<BlogPost />} />
             <Route path="/create" element={<CreatePost />} />
+            <Route path="/edit/:id" element={<EditPost />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/profile" element={<Profile />} />

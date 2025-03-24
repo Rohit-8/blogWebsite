@@ -71,11 +71,15 @@ router.put('/:id', auth, async (req, res) => {
     if (post.author.toString() !== req.user.id) {
       return res.status(401).json({ message: 'Not authorized' });
     }
-    const updatedPost = await Post.findByIdAndUpdate(
-      req.params.id,
-      { $set: req.body },
-      { new: true }
-    ).populate('author', 'username');
+
+    const { title, content, image } = req.body;
+    post.title = title;
+    post.content = content;
+    post.image = image;
+
+    const updatedPost = await post.save();
+    await updatedPost.populate('author', 'username');
+    
     res.json(updatedPost);
   } catch (err) {
     res.status(500).json({ message: err.message });
