@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Paper, Typography, Button, useTheme } from '@mui/material';
+import { Container, Paper, Typography, Button, useTheme, Box } from '@mui/material';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import { API_BASE_URL } from '../config';
@@ -46,7 +46,13 @@ function BlogPost() {
           <img
             src={post.image}
             alt={post.title}
-            style={{ width: '100%', maxHeight: '400px', objectFit: 'cover' }}
+            style={{
+              width: '100%',
+              maxHeight: '400px',
+              objectFit: 'cover',
+              borderRadius: '4px',
+              marginBottom: '2rem'
+            }}
           />
         )}
         <Typography variant="h4" gutterBottom>
@@ -59,19 +65,22 @@ function BlogPost() {
           {post.content}
         </Typography>
         {user && user.id === post.author._id && (
-          <div>
+          <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
             <Button
               variant="contained"
               color="primary"
               onClick={() => navigate(`/edit/${post._id}`)}
-              sx={{ marginRight: '1rem' }}
             >
               Edit
             </Button>
-            <Button variant="contained" color="error" onClick={handleDelete}>
+            <Button 
+              variant="contained" 
+              color="error"
+              onClick={handleDelete}
+            >
               Delete
             </Button>
-          </div>
+          </Box>
         )}
       </Paper>
     </Container>
